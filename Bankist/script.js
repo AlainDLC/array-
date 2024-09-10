@@ -61,6 +61,8 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
 const displayMovment = function (movements) {
   containerMovements.innerHTML = '';
   movements.forEach((mov, i) => {
@@ -77,7 +79,24 @@ const displayMovment = function (movements) {
   });
 };
 
+const displayBalance = movements => {
+  const balance = movements.reduce((acc, curr) => acc + curr, 0);
+  labelBalance.textContent = `${balance}£`;
+};
+
+const createUserNames = accs => {
+  accs.forEach(acc => {
+    acc = acc.username = acc.owner
+      .toUpperCase()
+      .split(' ')
+      .map(name => name[0])
+      .join('');
+  });
+  return accs;
+};
 displayMovment(account1.movements);
+createUserNames(accounts);
+displayBalance(account2.movements);
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -88,7 +107,5 @@ const currencies = new Map([
   ['EUR', 'Euro'],
   ['GBP', 'Pound sterling'],
 ]);
-
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
