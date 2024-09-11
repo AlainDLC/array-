@@ -81,7 +81,27 @@ const displayMovment = function (movements) {
 
 const displayBalance = movements => {
   const balance = movements.reduce((acc, curr) => acc + curr, 0);
-  labelBalance.textContent = `${balance}£`;
+  labelBalance.textContent = `${balance}💲 `;
+};
+
+const calcDisplaySummary = movements => {
+  const incomes = movements
+    .filter(mov => mov > 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumIn.textContent = `${incomes}💲`;
+  const out = movements
+    .filter(mov => mov < 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `${Math.abs(out)}💲`;
+
+  const intrest = movements
+    .filter(mov => mov > 0)
+    .map(deposit => (deposit * 1.2) / 100)
+    .filter((int, i, arr) => {
+      return int >= 1;
+    })
+    .reduce((acc, intr) => acc + intr, 0);
+  labelSumInterest.textContent = `${intrest}💲 `;
 };
 
 const createUserNames = accs => {
@@ -97,6 +117,7 @@ const createUserNames = accs => {
 displayMovment(account1.movements);
 createUserNames(accounts);
 displayBalance(account2.movements);
+calcDisplaySummary(account1.movements);
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -109,3 +130,9 @@ const currencies = new Map([
 ]);
 
 /////////////////////////////////////////////////
+const euroToUsd = 1.1;
+
+const totalDepositsUSD = movements
+  .filter(mov => mov > 0)
+  .map(mov => mov * euroToUsd)
+  .reduce((acc, mov) => acc + mov, 0);
