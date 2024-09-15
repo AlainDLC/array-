@@ -63,9 +63,11 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
-const displayMovment = function (movements) {
+const displayMovment = function (movements, sort = false) {
   containerMovements.innerHTML = '';
-  movements.forEach((mov, i) => {
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
+  movs.forEach((mov, i) => {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
     const html = `<div class="movements__row">
@@ -162,7 +164,57 @@ btnTransfer.addEventListener('click', function (e) {
   inputTransferTo.value = inputTransferAmount.value = ' ';
 });
 
+btnLoan.addEventListener('click', e => {
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    currentAccount.movements.push(amount);
+
+    updateUi(currentAccount);
+  }
+  inputLoanAmount.value = '';
+});
+
+btnClose.addEventListener('click', e => {
+  e.preventDefault();
+
+  // Validate user credentials
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    // Find the index of the current account
+    const index = accounts.findIndex(
+      acc => acc.username === currentAccount.username
+    );
+
+    // Check if the index is valid
+    if (index !== -1) {
+      console.log(index);
+
+      // Remove the account from the accounts array
+      accounts.splice(index, 1); // Use 1 to remove the item at `index`
+    } else {
+      console.log('Account not found.');
+    }
+  } else {
+    console.log('Invalid username or PIN.');
+  }
+
+  inputCloseUsername.value = inputClosePin.value = '';
+  // hide ui
+  containerApp.style.opacity = 0;
+});
+
 createUserNames(accounts);
+
+let sorted = false;
+btnSort.addEventListener('click', e => {
+  e.preventDefault();
+  displayMovment(currentAccount.movements, !sorted);
+  sorted = !sorted;
+});
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -181,3 +233,29 @@ const totalDepositsUSD = movements
   .filter(mov => mov > 0)
   .map(mov => mov * euroToUsd)
   .reduce((acc, mov) => acc + mov, 0);
+
+// fill array
+
+console.log(new Array(1, 2, 3, 4, 5));
+
+const arr = [1, 2, 3, 4, 5];
+
+const x = new Array(7);
+
+arr.fill(1, 3);
+console.log(arr);
+
+const y = Array.from({ length: 5 }, () => 1);
+
+console.log('y', y);
+
+const z = Array.from({ length: 5 }, (_, i) => i + 1);
+
+console.log(z);
+
+labelBalance.addEventListener('click', function () {
+  const movementsUI = Array.from(
+    document.querySelectorAll('.movements__value')
+  );
+  movementsUI.map(el => Number(el.textContent.replace('€', '')));
+});
